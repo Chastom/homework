@@ -1,0 +1,105 @@
+.AutoCompleteText, .InputBar {
+    box-sizing: border-box;
+}
+
+.AutoCompleteText {    
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.73);
+    background-color: white;
+}
+
+.AutoCompleteText ul {
+    list-style-type:none;
+    text-align: left;
+    margin: 0;
+    border-top: 1px solid #e6e6e6;
+    border: 1px solid #f3f3f3;
+    box-shadow: 0px 3px 4px 1px rgba(94,95,110,0.38);
+}
+
+.AutoCompleteText ul::before {
+    content: "";
+}
+
+.AutoCompleteText li {
+    padding: 10px 13px;
+    cursor: pointer;
+}
+
+.AutoCompleteText li h3{
+    font-size: 17;
+}
+
+.AutoCompleteText li:hover {
+    background-color: lightgrey;
+}
+
+.AutoCompleteText h3, p {
+    margin: 0;
+}
+
+@media only screen and (max-width: 1600px){
+    .InputBar input{
+        width: 85% !important;  
+    }
+}
+@media only screen and (max-width: 1080px) {
+    .InputBar input{
+        width: 80% !important;  
+    }
+}
+@media only screen and (max-width: 815px) {
+    .InputBar input{
+        width: 70% !important;  
+    }
+}
+@media only screen and (max-width: 555px) {
+    .InputBar input{
+        width: 60% !important;  
+    }
+}
+@media only screen and (max-width: 420px) {
+    .InputBar input{
+        width: 55% !important;  
+    }
+}
+.InputBar input{
+    width: 90%;
+    height: 49;
+    background-color: rgba(255,255,255,0.2);
+    border: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 17px;
+    color: rgba(0, 0, 0, 0.73);
+    box-sizing: border-box; display: inline-block;   
+}
+
+.InputBar input:focus {
+    background-color: white;
+}
+
+.InputBar img {
+    height: 19px;
+    padding: 15;
+    float: left;
+    vertical-align: middle;
+    background-color: rgba(255,255,255,0.2);
+}
+.InputBar button{
+    float:right;  
+    height: 10.5%;
+}
+
+::placeholder { 
+    color: white;
+    font-size: 14px;
+  }
+
+.right {
+    float: right !important;
+    height: 49px !important;
+    padding: 0 !important;
+    border-radius: 2px;
+  }
