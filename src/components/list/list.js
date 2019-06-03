@@ -215,27 +215,66 @@ class List extends React.Component {
     req.end();
   }
 
+  deleteList(id) {
+    var self = this;
+    var http = require('https');
+
+    var options = {
+      method: 'DELETE',
+      hostname: 'api.themoviedb.org',
+      port: null,
+      path: `/4/list/${id}`,
+      headers: {
+        authorization: `Bearer ${this.state.access_token}`,
+        'content-type': 'application/json;charset=utf-8'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      var chunks = [];
+
+      res.on('data', function(chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on('end', function() {
+        var body = Buffer.concat(chunks);
+        console.log(body.toString());
+        self.getLists();
+      });
+    });
+
+    req.write(JSON.stringify({}));
+    req.end();
+  }
+  suggestionSelected(name) {
+    console.log('li called func');
+  }
   renderLists() {
-    //this.getLists();
     var data = this.state.lists;
     console.log(data);
     if (data == null || data.total_results === 0 || data.success === false) {
       return null;
     }
     var lists = data.results;
-    //console.log(lists);
-    //console.log(lists[0].name);
     return (
-      <ul>
-        {lists.map(list => (
-          <li onClick={() => this.suggestionSelected(list.name)} key={list.id}>
-            <h3>{list.name}</h3>
-            <p>
-              {list.id} Description: {list.description}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <table>
+        <tbody>
+          {lists.map(list => (
+            <tr key={list.id}>
+              <td onClick={() => this.suggestionSelected(list.name)}>
+                <h3>{list.name}</h3>
+                <p>
+                  {list.id} Description: {list.description}
+                </p>
+              </td>
+              <td>
+                <button onClick={() => this.deleteList(list.id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     );
   }
   render() {
