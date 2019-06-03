@@ -11,7 +11,8 @@ class List extends React.Component {
       req_token: '',
       account_id: '',
       access_token: '',
-      value: '',
+      new_name: '',
+      new_description: '',
       lists: []
     };
 
@@ -36,7 +37,8 @@ class List extends React.Component {
     const state = {
       req_token: token,
       authv4: api_key,
-      value: ''
+      new_name: '',
+      new_description: ''
     };
     window.localStorage.setItem('saved_state', JSON.stringify(state));
   }
@@ -86,9 +88,11 @@ class List extends React.Component {
       authv4: authv4,
       account_id: account_id,
       access_token: access_token,
-      value: ''
+      new_name: '',
+      new_description: ''
     };
     window.localStorage.setItem('saved_state', JSON.stringify(state));
+    this.getLists();
   }
 
   getAccess(req_token) {
@@ -132,12 +136,32 @@ class List extends React.Component {
   }
 
   handleChange = e => {
-    this.setState({ value: e.target.value });
+    this.setState({ new_name: e.target.value });
     console.log(e.target.value);
   };
 
+  handleDescription = e => {
+    this.setState({ new_description: e.target.value });
+  };
+  resetInputValues() {
+    const { authv4, req_token, account_id, access_token } = this.state;
+    this.setState(() => ({
+      new_name: '',
+      new_description: ''
+    }));
+    const state = {
+      req_token: req_token,
+      authv4: authv4,
+      account_id: account_id,
+      access_token: access_token,
+      new_name: '',
+      new_description: ''
+    };
+    window.localStorage.setItem('saved_state', JSON.stringify(state));
+  }
   handleSubmit = e => {
-    const { access_token, value } = this.state;
+    var self = this;
+    const { access_token, new_name, new_description } = this.state;
     var http = require('https');
 
     var options = {
@@ -163,21 +187,22 @@ class List extends React.Component {
         console.log(body.toString());
         var data = JSON.parse(body);
         var success = data.success;
-        if (success === true) {
-          alert('List created successfully');
-        } else {
+        if (success === false) {
           var message = data.error_message;
           if (message == null) {
             message = '';
           }
           alert('There has been an error while creating the list\n' + message);
         }
+        self.resetInputValues();
+        self.getLists();
       });
     });
 
-    req.write(JSON.stringify({ name: `${value}`, iso_639_1: 'en' }));
+    req.write(
+      JSON.stringify({ name: `${new_name}`, iso_639_1: 'en', description: `${new_description}` })
+    );
     req.end();
-    this.getLists();
   };
   getLists() {
     var self = this;
@@ -252,7 +277,7 @@ class List extends React.Component {
   }
   renderLists() {
     var data = this.state.lists;
-    console.log(data);
+    //console.log(data);
     if (data == null || data.total_results === 0 || data.success === false) {
       return null;
     }
@@ -278,7 +303,7 @@ class List extends React.Component {
     );
   }
   render() {
-    const { authv4, req_token, access_token, account_id, value, lists } = this.state;
+    const { authv4, req_token, access_token, account_id, new_name, new_description } = this.state;
     return (
       <div>
         <div className={styles.InputBar}>
@@ -300,7 +325,11 @@ class List extends React.Component {
         <div>
           <label>
             Name of the new list:
-            <input type="text" value={value} onChange={this.handleChange} />
+            <input type="text" value={new_name} onChange={this.handleChange} />
+          </label>
+          <label>
+            Description:
+            <input type="text" value={new_description} onChange={this.handleDescription} />
           </label>
           <button onClick={this.handleSubmit}>Submit</button>
         </div>
