@@ -13,10 +13,7 @@ class List extends React.Component {
       access_token: '',
       value: ''
     };
-    // const state = window.localStorage.getItem('req_token');
-    // if (state) {
-    //   this.state.req_token = state;
-    // }
+
     const test = JSON.parse(window.localStorage.getItem('saved_state'));
     if (test) {
       this.state = test;
@@ -65,7 +62,6 @@ class List extends React.Component {
 
       res.on('end', function() {
         var body = Buffer.concat(chunks);
-        console.log(body.toString());
         var data = JSON.parse(body);
         var token = data.request_token;
         self.requestAuthenticated(token, api_key);
@@ -118,7 +114,6 @@ class List extends React.Component {
 
       res.on('end', function() {
         var body = Buffer.concat(chunks);
-        console.log(body.toString());
         var data = JSON.parse(body);
         var access_token = data.access_token;
         var account_id = data.account_id;
@@ -140,8 +135,46 @@ class List extends React.Component {
   };
 
   handleSubmit = e => {
-    alert('A name was submitted: ' + this.state.value);
-    event.preventDefault();
+    const { access_token, value } = this.state;
+    var http = require('https');
+
+    var options = {
+      method: 'POST',
+      hostname: 'api.themoviedb.org',
+      port: null,
+      path: '/4/list',
+      headers: {
+        authorization: `Bearer ${access_token}`,
+        'content-type': 'application/json;charset=utf-8'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      var chunks = [];
+
+      res.on('data', function(chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on('end', function() {
+        var body = Buffer.concat(chunks);
+        console.log(body.toString());
+        var data = JSON.parse(body);
+        var success = data.success;
+        if (success === true) {
+          alert('List created successfully');
+        } else {
+          var message = data.error_message;
+          if (message == null) {
+            message = '';
+          }
+          alert('There has been an error while creating the list\n' + message);
+        }
+      });
+    });
+
+    req.write(JSON.stringify({ name: `${value}`, iso_639_1: 'en' }));
+    req.end();
   };
 
   render() {
@@ -165,13 +198,11 @@ class List extends React.Component {
           {account_id}
         </div>
         <div>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              Name of the new list:
-              <input type="text" value={value} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
+          <label>
+            Name of the new list:
+            <input type="text" value={value} onChange={this.handleChange} />
+          </label>
+          <button onClick={this.handleSubmit}>Submit</button>
         </div>
       </div>
     );
