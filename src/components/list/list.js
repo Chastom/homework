@@ -11,13 +11,15 @@ class List extends React.Component {
       req_token: '',
       account_id: '',
       access_token: '',
-      value: ''
+      value: '',
+      lists: []
     };
 
     const test = JSON.parse(window.localStorage.getItem('saved_state'));
     if (test) {
       this.state = test;
     }
+    this.getLists();
   }
 
   onTextChanged = e => {
@@ -175,10 +177,69 @@ class List extends React.Component {
 
     req.write(JSON.stringify({ name: `${value}`, iso_639_1: 'en' }));
     req.end();
+    this.getLists();
   };
+  getLists() {
+    var self = this;
+    const { authv4, account_id } = this.state;
+    var http = require('https');
 
+    var options = {
+      method: 'GET',
+      hostname: 'api.themoviedb.org',
+      port: null,
+      path: `/4/account/${account_id}/lists?page=1`,
+      headers: {
+        authorization: `Bearer ${authv4}`
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      var chunks = [];
+
+      res.on('data', function(chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on('end', function() {
+        var body = Buffer.concat(chunks);
+        //console.log(body.toString());
+        var data = JSON.parse(body);
+        self.setState(() => ({
+          lists: data
+        }));
+      });
+    });
+
+    req.write('{}');
+    req.end();
+  }
+
+  renderLists() {
+    //this.getLists();
+    var data = this.state.lists;
+    console.log(data);
+    if (data == null || data.total_results === 0 || data.success === false) {
+      return null;
+    }
+    var lists = data.results;
+    //console.log(lists);
+    //console.log(lists[0].name);
+    return (
+      <ul>
+        {lists.map(list => (
+          <li onClick={() => this.suggestionSelected(list.name)} key={list.id}>
+            <h3>{list.name}</h3>
+            <p>
+              {list.id} Description: {list.description}
+            </p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   render() {
-    const { authv4, req_token, access_token, account_id, value } = this.state;
+    const { authv4, req_token, access_token, account_id, value, lists } = this.state;
     return (
       <div>
         <div className={styles.InputBar}>
@@ -204,6 +265,7 @@ class List extends React.Component {
           </label>
           <button onClick={this.handleSubmit}>Submit</button>
         </div>
+        <div className={styles.AutoCompleteText}>{this.renderLists()}</div>
       </div>
     );
   }
