@@ -10,7 +10,8 @@ class List extends React.Component {
       authv4: '',
       req_token: '',
       account_id: '',
-      access_token: ''
+      access_token: '',
+      value: ''
     };
     // const state = window.localStorage.getItem('req_token');
     // if (state) {
@@ -35,7 +36,8 @@ class List extends React.Component {
     }));
     const state = {
       req_token: token,
-      authv4: api_key
+      authv4: api_key,
+      value: ''
     };
     window.localStorage.setItem('saved_state', JSON.stringify(state));
   }
@@ -85,7 +87,8 @@ class List extends React.Component {
       req_token: req_token,
       authv4: authv4,
       account_id: account_id,
-      access_token: access_token
+      access_token: access_token,
+      value: ''
     };
     window.localStorage.setItem('saved_state', JSON.stringify(state));
   }
@@ -131,8 +134,18 @@ class List extends React.Component {
     req.end();
   }
 
+  handleChange = e => {
+    this.setState({ value: e.target.value });
+    console.log(e.target.value);
+  };
+
+  handleSubmit = e => {
+    alert('A name was submitted: ' + this.state.value);
+    event.preventDefault();
+  };
+
   render() {
-    const { authv4, req_token, access_token, account_id } = this.state;
+    const { authv4, req_token, access_token, account_id, value } = this.state;
     return (
       <div>
         <div className={styles.InputBar}>
@@ -150,6 +163,15 @@ class List extends React.Component {
         <div>
           <button onClick={() => this.getAccess(req_token)}>Get access</button>
           {account_id}
+        </div>
+        <div>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              Name of the new list:
+              <input type="text" value={value} onChange={this.handleChange} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
         </div>
       </div>
     );

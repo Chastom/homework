@@ -1,3 +1,7 @@
+div {
+  margin: 0 2px 20px 5px;
+}
+
 .AutoCompleteText,
 .InputBar {
   box-sizing: border-box;
