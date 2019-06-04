@@ -26,8 +26,12 @@ class List extends React.Component {
     const savedState = JSON.parse(window.localStorage.getItem('saved_state'));
     if (savedState) {
       this.state = savedState;
-      if (this.state.account_id != null) {
+      if (this.state.account_id != null && this.state.account_id.length > 0) {
         this.getLists();
+      }
+      var req_token = this.state.req_token;
+      if (req_token != null && req_token.length > 0 && this.state.access_token == null) {
+        this.getAccess(req_token);
       }
     }
   }
@@ -296,7 +300,9 @@ class List extends React.Component {
   }
 
   modalClose = () => {
-    this.setState({ modalShow: false });
+    this.setState(() => ({
+      modalShow: false
+    }));
   };
   renderLists() {
     var self = this;
@@ -340,16 +346,14 @@ class List extends React.Component {
       selectedListId
     } = this.state;
     var access = 'access denied';
-    if (account_id != null) {
+    if (account_id != null && account_id.length != 0) {
       access = 'access granted';
     }
     return (
       <div>
         <div className="container">
-          <h2>
-            Enter TheMobieDb account data, press [Approve] and if data was valid, press [Get
-            access]:
-          </h2>
+          <h2> 1. Enter data -> press Approve </h2>
+          <h2> 2. After authentication -> press Get access </h2>
           <div>
             <label htmlFor="comment">API Key (v3 auth):</label>
             <input
@@ -371,12 +375,13 @@ class List extends React.Component {
               type="text"
             />
           </div>
-          <button onClick={this.getRequestToken}>Approve</button>
-          <button onClick={() => this.getAccess(req_token)}>Get access</button>
+          <div>
+            <button onClick={this.getRequestToken}>Approve</button>
+          </div>
           {access}
         </div>
         <hr />
-        <div>
+        <div className="container">
           <label>
             Name of the new list: <br />
             <input type="text" value={new_name} onChange={this.handleChange} />
@@ -388,7 +393,7 @@ class List extends React.Component {
           </label>
           <button onClick={this.handleSubmit}>Submit</button>
         </div>
-        <div className={styles.AutoCompleteText}>{this.renderLists()}</div>
+        <div className="container">{this.renderLists()}</div>
         <ListModal show={this.state.modalShow} onHide={this.modalClose} listId={selectedListId} />
       </div>
     );

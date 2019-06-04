@@ -74,6 +74,7 @@ class Autocomplete extends React.Component {
   }
 
   addMovie(listId) {
+    var self = this;
     const savedState = JSON.parse(window.localStorage.getItem('saved_state'));
     var access_token = savedState.access_token;
     //console.log(listId + ' ' + this.state.text + ' ' + this.state.movieId);
@@ -100,6 +101,9 @@ class Autocomplete extends React.Component {
       res.on('end', function() {
         var body = Buffer.concat(chunks);
         console.log(body.toString());
+        self.setState(() => ({
+          text: ''
+        }));
       });
     });
 
