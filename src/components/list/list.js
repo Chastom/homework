@@ -22,8 +22,10 @@ class List extends React.Component {
     const test = JSON.parse(window.localStorage.getItem('saved_state'));
     if (test) {
       this.state = test;
+      if (this.state.account_id != null) {
+        this.getLists();
+      }
     }
-    this.getLists();
   }
 
   onTextChanged = e => {
@@ -280,8 +282,8 @@ class List extends React.Component {
   }
   renderLists() {
     var data = this.state.lists;
-    //console.log(data);
-    if (data == null || data.total_results === 0 || data.success === false) {
+    console.log(data);
+    if (data == null || data.length == 0 || data.total_results === 0 || data.success === false) {
       return null;
     }
     var lists = data.results;

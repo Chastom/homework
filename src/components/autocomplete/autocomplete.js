@@ -70,14 +70,12 @@ class Autocomplete extends React.Component {
     return (
       <div>
         <div className={styles.InputBar}>
-          <img src="https://i.imgur.com/QOnoqEX.png" />
           <input
             value={text}
             onChange={this.onTextChanged}
             placeholder="Enter movie name"
             type="text"
           />
-          <img className={styles.right} src="https://i.imgur.com/tcRNFtE.png" />
         </div>
         <div className={styles.AutoCompleteText}>{this.renderSuggestions()}</div>
       </div>
