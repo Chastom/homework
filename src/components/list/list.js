@@ -65,7 +65,6 @@ class List extends React.Component {
     var authv4 = this.state.authv4;
     var api_key = this.state.api_key;
     var self = this;
-    console.log(authv4);
     var http = require('https');
 
     var options = {
@@ -156,7 +155,6 @@ class List extends React.Component {
 
   handleChange = e => {
     this.setState({ new_name: e.target.value });
-    console.log(e.target.value);
   };
 
   handleDescription = e => {
@@ -203,7 +201,6 @@ class List extends React.Component {
 
       res.on('end', function() {
         var body = Buffer.concat(chunks);
-        console.log(body.toString());
         var data = JSON.parse(body);
         var success = data.success;
         if (success === false) {
@@ -247,7 +244,6 @@ class List extends React.Component {
 
       res.on('end', function() {
         var body = Buffer.concat(chunks);
-        //console.log(body.toString());
         var data = JSON.parse(body);
         self.setState(() => ({
           lists: data
@@ -283,7 +279,6 @@ class List extends React.Component {
 
       res.on('end', function() {
         var body = Buffer.concat(chunks);
-        console.log(body.toString());
         self.getLists();
       });
     });
@@ -308,7 +303,6 @@ class List extends React.Component {
   renderLists() {
     var self = this;
     var data = this.state.lists;
-    //console.log(data);
     if (data == null || data.length == 0 || data.total_results === 0 || data.success === false) {
       return null;
     }
@@ -320,9 +314,7 @@ class List extends React.Component {
             <tr key={list.id}>
               <td onClick={() => this.suggestionSelected(list.id)}>
                 <h3>{list.name}</h3>
-                <p>
-                  {list.id} Description: {list.description}
-                </p>
+                <p>Description: {list.description}</p>
               </td>
               <td>
                 <Autocomplete selectedId={list.id} />
