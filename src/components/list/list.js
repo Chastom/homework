@@ -4,6 +4,7 @@ import styles from './list.css';
 import Autocomplete from '../autocomplete';
 import ListModal from '../list-modal';
 import Table from 'react-bootstrap/Table';
+import { ButtonToolbar, Button } from 'react-bootstrap';
 
 class List extends React.Component {
   constructor(props) {
@@ -16,7 +17,9 @@ class List extends React.Component {
       access_token: '',
       new_name: '',
       new_description: '',
-      lists: []
+      lists: [],
+      modalShow: false,
+      selectedListId: ''
     };
 
     const test = JSON.parse(window.localStorage.getItem('saved_state'));
@@ -279,10 +282,17 @@ class List extends React.Component {
     req.write(JSON.stringify({}));
     req.end();
   }
-  suggestionSelected(name) {
-    console.log('li called func');
+
+  suggestionSelected(listId) {
+    this.setState(() => ({
+      selectedListId: listId,
+      modalShow: true
+    }));
   }
 
+  modalClose = () => {
+    this.setState({ modalShow: false });
+  };
   renderLists() {
     var self = this;
     var data = this.state.lists;
@@ -296,7 +306,7 @@ class List extends React.Component {
         <tbody>
           {lists.map(list => (
             <tr key={list.id}>
-              <td onClick={() => this.suggestionSelected(list.name)}>
+              <td onClick={() => this.suggestionSelected(list.id)}>
                 <h3>{list.name}</h3>
                 <p>
                   {list.id} Description: {list.description}
@@ -315,7 +325,7 @@ class List extends React.Component {
     );
   }
   render() {
-    const { authv4, req_token, access_token, account_id, new_name, new_description } = this.state;
+    const { authv4, req_token, account_id, new_name, new_description, selectedListId } = this.state;
     var access = 'access denied';
     if (account_id != null) {
       access = 'access granted';
@@ -353,7 +363,7 @@ class List extends React.Component {
           <button onClick={this.handleSubmit}>Submit</button>
         </div>
         <div className={styles.AutoCompleteText}>{this.renderLists()}</div>
-        <ListModal />
+        <ListModal show={this.state.modalShow} onHide={this.modalClose} listId={selectedListId} />
       </div>
     );
   }
