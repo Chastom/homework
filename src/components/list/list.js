@@ -1,6 +1,9 @@
 import { hot } from 'react-hot-loader/root';
 import React, { Component } from 'react';
 import styles from './list.css';
+import Autocomplete from '../autocomplete';
+import ListModal from '../list-modal';
+import Table from 'react-bootstrap/Table';
 
 class List extends React.Component {
   constructor(props) {
@@ -283,7 +286,7 @@ class List extends React.Component {
     }
     var lists = data.results;
     return (
-      <table>
+      <Table striped bordered hover size="sm">
         <tbody>
           {lists.map(list => (
             <tr key={list.id}>
@@ -294,12 +297,15 @@ class List extends React.Component {
                 </p>
               </td>
               <td>
+                <Autocomplete />
+              </td>
+              <td>
                 <button onClick={() => this.deleteList(list.id)}>Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     );
   }
   render() {
@@ -334,6 +340,7 @@ class List extends React.Component {
           <button onClick={this.handleSubmit}>Submit</button>
         </div>
         <div className={styles.AutoCompleteText}>{this.renderLists()}</div>
+        <ListModal />
       </div>
     );
   }
