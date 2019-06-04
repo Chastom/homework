@@ -8,14 +8,17 @@ class Autocomplete extends React.Component {
 
     this.state = {
       suggestions: [],
-      text: ''
+      text: '',
+      movieId: '',
+      disabledButton: true
     };
   }
 
   onTextChanged = e => {
     const value = e.target.value;
     this.setState(() => ({
-      text: value
+      text: value,
+      disabledButton: true
     }));
     this.getMovies(value);
   };
@@ -29,7 +32,10 @@ class Autocomplete extends React.Component {
     return (
       <ul>
         {movies.map(movie => (
-          <li onClick={() => this.suggestionSelected(movie.original_title)} key={movie.id}>
+          <li
+            onClick={() => this.suggestionSelected(movie.original_title, movie.id)}
+            key={movie.id}
+          >
             <h3>{movie.original_title}</h3>
             <p>
               {movie.vote_average} Rating, {movie.release_date.toString().slice(0, 4)}
@@ -40,10 +46,12 @@ class Autocomplete extends React.Component {
     );
   }
 
-  suggestionSelected(value) {
+  suggestionSelected(value, id) {
     this.setState(() => ({
       text: value,
-      suggestions: []
+      suggestions: [],
+      movieId: id,
+      disabledButton: false
     }));
   }
 
@@ -65,8 +73,42 @@ class Autocomplete extends React.Component {
     }
   }
 
+  addMovie(listId) {
+    const savedState = JSON.parse(window.localStorage.getItem('saved_state'));
+    var access_token = savedState.access_token;
+    //console.log(listId + ' ' + this.state.text + ' ' + this.state.movieId);
+    var http = require('https');
+
+    var options = {
+      method: 'POST',
+      hostname: 'api.themoviedb.org',
+      port: null,
+      path: `/4/list/${listId}/items`,
+      headers: {
+        authorization: `Bearer ${access_token}`,
+        'content-type': 'application/json;charset=utf-8'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      var chunks = [];
+
+      res.on('data', function(chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on('end', function() {
+        var body = Buffer.concat(chunks);
+        console.log(body.toString());
+      });
+    });
+
+    req.write(JSON.stringify({ items: [{ media_type: 'movie', media_id: this.state.movieId }] }));
+    req.end();
+  }
+
   render() {
-    const { text } = this.state;
+    const { text, disabledButton } = this.state;
     return (
       <div>
         <div className={styles.InputBar}>
@@ -78,6 +120,9 @@ class Autocomplete extends React.Component {
           />
         </div>
         <div className={styles.AutoCompleteText}>{this.renderSuggestions()}</div>
+        <button disabled={disabledButton} onClick={() => this.addMovie(this.props.selectedId)}>
+          Add movie
+        </button>
       </div>
     );
   }

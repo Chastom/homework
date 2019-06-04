@@ -166,7 +166,7 @@ class List extends React.Component {
     };
     window.localStorage.setItem('saved_state', JSON.stringify(state));
   }
-  handleSubmit = e => {
+  handleSubmit = () => {
     var self = this;
     const { access_token, new_name, new_description } = this.state;
     var http = require('https');
@@ -282,7 +282,9 @@ class List extends React.Component {
   suggestionSelected(name) {
     console.log('li called func');
   }
+
   renderLists() {
+    var self = this;
     var data = this.state.lists;
     //console.log(data);
     if (data == null || data.length == 0 || data.total_results === 0 || data.success === false) {
@@ -301,9 +303,9 @@ class List extends React.Component {
                 </p>
               </td>
               <td>
-                <Autocomplete />
+                <Autocomplete selectedId={list.id} />
               </td>
-              <td>
+              <td className="align-middle">
                 <button onClick={() => this.deleteList(list.id)}>Delete</button>
               </td>
             </tr>
@@ -337,13 +339,15 @@ class List extends React.Component {
           <button onClick={() => this.getAccess(req_token)}>Get access</button>
           {access}
         </div>
+        <hr />
         <div>
           <label>
-            Name of the new list:
+            Name of the new list: <br />
             <input type="text" value={new_name} onChange={this.handleChange} />
           </label>
+          <br />
           <label>
-            Description:
+            Description: <br />
             <input type="text" value={new_description} onChange={this.handleDescription} />
           </label>
           <button onClick={this.handleSubmit}>Submit</button>
