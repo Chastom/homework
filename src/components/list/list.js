@@ -301,7 +301,8 @@ class List extends React.Component {
 
   modalClose = () => {
     this.setState(() => ({
-      modalShow: false
+      modalShow: false,
+      selectedListId: ''
     }));
   };
   renderLists() {
@@ -352,8 +353,7 @@ class List extends React.Component {
     return (
       <div>
         <div className="container">
-          <h2> 1. Enter data -> press Approve </h2>
-          <h2> 2. After authentication -> press Get access </h2>
+          <h2> Enter you account data and press Approve </h2>
           <div>
             <label htmlFor="comment">API Key (v3 auth):</label>
             <input

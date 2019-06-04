@@ -19,9 +19,15 @@ class Example extends React.Component {
     if (savedState) {
       var access_token = savedState.access_token;
       var api_key = savedState.api_key;
-      if (this.props.listId == null) {
+      if (this.props.listId == null) return;
+
+      if (this.props.listId.length == 0) {
+        self.setState(() => ({
+          currentId: ''
+        }));
         return;
       }
+
       var listId = parseInt(this.props.listId);
 
       var http = require('https');
@@ -59,6 +65,43 @@ class Example extends React.Component {
       req.end();
     }
   };
+
+  deleteMovie(id) {
+    var self = this;
+    const savedState = JSON.parse(window.localStorage.getItem('saved_state'));
+    var access_token = savedState.access_token;
+    var listId = parseInt(this.props.listId);
+    var http = require('https');
+
+    var options = {
+      method: 'DELETE',
+      hostname: 'api.themoviedb.org',
+      port: null,
+      path: `/4/list/${listId}/items`,
+      headers: {
+        authorization: `Bearer ${access_token}`,
+        'content-type': 'application/json;charset=utf-8'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      var chunks = [];
+
+      res.on('data', function(chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on('end', function() {
+        var body = Buffer.concat(chunks);
+        //console.log(body.toString());
+        self.getMovies();
+      });
+    });
+
+    req.write(JSON.stringify({ items: [{ media_type: 'movie', media_id: id }] }));
+    req.end();
+  }
+
   renderMovies() {
     var movies = this.state.movies;
     if (movies == null || movies.length === 0) {
@@ -76,7 +119,7 @@ class Example extends React.Component {
                 </p>
               </td>
               <td className="align-middle">
-                <button onClick={() => this.deleteList(movie.id)}>Remove</button>
+                <button onClick={() => this.deleteMovie(movie.id)}>Remove</button>
               </td>
             </tr>
           ))}
