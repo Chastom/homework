@@ -11,6 +11,7 @@ class List extends React.Component {
     super(props);
 
     this.state = {
+      api_key: '',
       authv4: '',
       req_token: '',
       account_id: '',
@@ -22,40 +23,45 @@ class List extends React.Component {
       selectedListId: ''
     };
 
-    const test = JSON.parse(window.localStorage.getItem('saved_state'));
-    if (test) {
-      this.state = test;
+    const savedState = JSON.parse(window.localStorage.getItem('saved_state'));
+    if (savedState) {
+      this.state = savedState;
       if (this.state.account_id != null) {
         this.getLists();
       }
     }
   }
 
-  onTextChanged = e => {
+  onTextChangedApi4 = e => {
     const value = e.target.value;
     this.setState(() => ({
       authv4: value
     }));
-    console.log(value);
   };
 
-  requestAuthenticated(token, api_key) {
+  onTextChangedApi3 = e => {
+    const value = e.target.value;
+    this.setState(() => ({
+      api_key: value
+    }));
+  };
+
+  requestAuthenticated(token, authv4, api_key) {
     this.setState(() => ({
       req_token: token
     }));
     const state = {
       req_token: token,
-      authv4: api_key,
-      new_name: '',
-      new_description: ''
+      authv4: authv4,
+      api_key: api_key
     };
     window.localStorage.setItem('saved_state', JSON.stringify(state));
   }
   getRequestToken = () => {
-    var api_key = this.state.authv4;
+    var authv4 = this.state.authv4;
+    var api_key = this.state.api_key;
     var self = this;
-    console.log('Button clicked');
-    console.log(api_key);
+    console.log(authv4);
     var http = require('https');
 
     var options = {
@@ -64,7 +70,7 @@ class List extends React.Component {
       port: null,
       path: '/4/auth/request_token',
       headers: {
-        authorization: `Bearer ${api_key}`,
+        authorization: `Bearer ${authv4}`,
         'content-type': 'application/json;charset=utf-8'
       }
     };
@@ -78,7 +84,7 @@ class List extends React.Component {
         var body = Buffer.concat(chunks);
         var data = JSON.parse(body);
         var token = data.request_token;
-        self.requestAuthenticated(token, api_key);
+        self.requestAuthenticated(token, authv4, api_key);
         window.location = `https://www.themoviedb.org/auth/access?request_token=${token}`;
       });
     });
@@ -88,18 +94,17 @@ class List extends React.Component {
   };
 
   setAccess(access_token, account_id) {
-    const { authv4, req_token } = this.state;
+    const { authv4, api_key, req_token } = this.state;
     this.setState(() => ({
       access_token: access_token,
       account_id: account_id
     }));
     const state = {
       req_token: req_token,
+      api_key: api_key,
       authv4: authv4,
       account_id: account_id,
-      access_token: access_token,
-      new_name: '',
-      new_description: ''
+      access_token: access_token
     };
     window.localStorage.setItem('saved_state', JSON.stringify(state));
     this.getLists();
@@ -325,7 +330,15 @@ class List extends React.Component {
     );
   }
   render() {
-    const { authv4, req_token, account_id, new_name, new_description, selectedListId } = this.state;
+    const {
+      api_key,
+      authv4,
+      req_token,
+      account_id,
+      new_name,
+      new_description,
+      selectedListId
+    } = this.state;
     var access = 'access denied';
     if (account_id != null) {
       access = 'access granted';
@@ -333,15 +346,28 @@ class List extends React.Component {
     return (
       <div>
         <div className="container">
-          <h2>Enter your TheMobieDb account data in order to use the app:</h2>
+          <h2>
+            Enter TheMobieDb account data, press [Approve] and if data was valid, press [Get
+            access]:
+          </h2>
           <div>
-            <label htmlFor="comment">Enter API Read Access Token (v4 auth):</label>
+            <label htmlFor="comment">API Key (v3 auth):</label>
+            <input
+              className="form-control"
+              id="comment"
+              value={api_key}
+              onChange={this.onTextChangedApi3}
+              type="text"
+            />
+          </div>
+          <div>
+            <label htmlFor="comment2">Enter API Read Access Token (v4 auth):</label>
             <textarea
               className="form-control"
               rows="3"
-              id="comment"
+              id="comment2"
               value={authv4}
-              onChange={this.onTextChanged}
+              onChange={this.onTextChangedApi4}
               type="text"
             />
           </div>
