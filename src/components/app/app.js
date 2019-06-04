@@ -8,19 +8,9 @@ import List from '../list';
 import styles from './app.css';
 
 const App = () => (
-  <div>          
-      <div className={styles.container}>
-        <div className={styles.size}>
-          <Autocomplete />    
-        </div>            
-      </div>
-          
-    <List />    
-
-
+  <div>
+    <List />
   </div>
-
-
 );
 
 export default hot(App);

@@ -96,7 +96,7 @@ p {
 }
 
 .InputBar input::placeholder {
-  color: white;
+  color: rgba(153, 153, 153, 0.747);
   font-size: 14px;
 }
 

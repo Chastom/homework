@@ -33,6 +33,7 @@ class List extends React.Component {
     this.setState(() => ({
       authv4: value
     }));
+    console.log(value);
   };
 
   requestAuthenticated(token, api_key) {
@@ -51,6 +52,7 @@ class List extends React.Component {
     var api_key = this.state.authv4;
     var self = this;
     console.log('Button clicked');
+    console.log(api_key);
     var http = require('https');
 
     var options = {
@@ -282,7 +284,7 @@ class List extends React.Component {
   }
   renderLists() {
     var data = this.state.lists;
-    console.log(data);
+    //console.log(data);
     if (data == null || data.length == 0 || data.total_results === 0 || data.success === false) {
       return null;
     }
@@ -312,23 +314,28 @@ class List extends React.Component {
   }
   render() {
     const { authv4, req_token, access_token, account_id, new_name, new_description } = this.state;
+    var access = 'access denied';
+    if (account_id != null) {
+      access = 'access granted';
+    }
     return (
       <div>
-        <div className={styles.InputBar}>
-          <input
-            value={authv4}
-            onChange={this.onTextChanged}
-            placeholder="Enter API Read Access Token"
-            type="text"
-          />
-        </div>
-        <div>
+        <div className="container">
+          <h2>Enter your TheMobieDb account data in order to use the app:</h2>
+          <div>
+            <label htmlFor="comment">Enter API Read Access Token (v4 auth):</label>
+            <textarea
+              className="form-control"
+              rows="3"
+              id="comment"
+              value={authv4}
+              onChange={this.onTextChanged}
+              type="text"
+            />
+          </div>
           <button onClick={this.getRequestToken}>Approve</button>
-          {req_token}
-        </div>
-        <div>
           <button onClick={() => this.getAccess(req_token)}>Get access</button>
-          {account_id}
+          {access}
         </div>
         <div>
           <label>
